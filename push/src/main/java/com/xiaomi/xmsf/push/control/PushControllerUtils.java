@@ -101,10 +101,23 @@ public class PushControllerUtils {
      * @return is in main processMIPushMessage
      */
     public static boolean isAppMainProc(Context context) {
-        for (ActivityManager.RunningAppProcessInfo runningAppProcessInfo : ((ActivityManager)
-                context.getSystemService(Context.ACTIVITY_SERVICE))
-                .getRunningAppProcesses()) {
-            if (runningAppProcessInfo.pid == Process.myPid() && runningAppProcessInfo.processName.equals(context.getPackageName())) {
+        // Prefer Application.getProcessName() on API 28+ — it's reliable and
+        // doesn't require ActivityManager, which is increasingly restricted.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            return context.getPackageName().equals(android.app.Application.getProcessName());
+        }
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (am == null) {
+            return false;
+        }
+        java.util.List<ActivityManager.RunningAppProcessInfo> processes = am.getRunningAppProcesses();
+        if (processes == null) {
+            return false;
+        }
+        int myPid = Process.myPid();
+        String pkg = context.getPackageName();
+        for (ActivityManager.RunningAppProcessInfo info : processes) {
+            if (info.pid == myPid && pkg.equals(info.processName)) {
                 return true;
             }
         }
@@ -157,7 +170,9 @@ public class PushControllerUtils {
             // Force stop and disable services.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-                scheduler.cancelAll();
+                if (scheduler != null) {
+                    scheduler.cancelAll();
+                }
             }
             context.stopService(new Intent(context, com.xiaomi.push.service.XMPushService.class));
         }

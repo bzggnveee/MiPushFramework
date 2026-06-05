@@ -65,6 +65,7 @@
         -->
         <activity
                 android:name="top.trumeet.mipushframework.wizard.WelcomeActivity"
+                android:exported="true"
                 android:icon="@mipmap/ic_launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -97,13 +98,23 @@
                     android:resource="@xml/filepaths" />
         </provider>
 
-        <receiver android:name=".push.service.receivers.BootReceiver">
+        <receiver
+                android:name=".push.service.receivers.BootReceiver"
+                android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".push.service.receivers.NetworkStatusReceiver">
+        <!--
+        NOTE: android.net.conn.CONNECTIVITY_CHANGE is no longer delivered to
+        manifest-declared receivers since Android 7.0 (API 24); this entry is
+        effectively dead. Network change handling lives inside XMPushService,
+        which registers a runtime receiver. Kept here only for legacy lookup.
+        -->
+        <receiver
+                android:name=".push.service.receivers.NetworkStatusReceiver"
+                android:exported="false">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
@@ -141,7 +152,9 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".push.service.receivers.AccountChangedReceiver">
+        <receiver
+                android:name=".push.service.receivers.AccountChangedReceiver"
+                android:exported="true">
             <intent-filter>
                 <action android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED" />
             </intent-filter>
@@ -149,18 +162,23 @@
 
         <receiver
                 android:name=".push.service.receivers.NotificationEventReceiver"
+                android:exported="true"
                 android:permission="com.xiaomi.xmsf.permission.NOTIFICATION_ACTIVE">
             <intent-filter>
                 <action android:name="com.xiaomi.xmsf.push.NOTIFICATION_ACTIVE" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.xiaomi.push.service.SelfUpdateReceiver">
+        <receiver
+                android:name="com.xiaomi.push.service.SelfUpdateReceiver"
+                android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.xiaomi.push.revival.NotificationsRevivalForSelfUpdated" />
+        <receiver
+                android:name="com.xiaomi.push.revival.NotificationsRevivalForSelfUpdated"
+                android:exported="false" />
 
         <service
                 android:name=".push.service.HttpService"
@@ -198,6 +216,7 @@
         <!-- Push API -->
         <service
                 android:name="top.trumeet.common.ita.DetectionService"
+                android:exported="true"
                 android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />

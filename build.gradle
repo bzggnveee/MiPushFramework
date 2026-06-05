@@ -1,18 +1,21 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
+// Repo order rationale:
+// 1. google() / mavenCentral() / gradlePluginPortal() / jitpack — primary,
+//    globally reliable. Hosts AGP, Kotlin, AndroidX, libsu, etc.
+// 2. aliyun-public — last-resort fallback. Mirrors the defunct jcenter, which
+//    is the only place some legacy deps (e.g. com.github.promeg:tinypinyin)
+//    still live. Putting it last means CI doesn't depend on aliyun being up
+//    for the common path (aliyun 502s are frequent from outside China).
 buildscript {
     ext.kotlin_version = '1.8.0'
 
     repositories {
-        maven { url = uri("https://maven.aliyun.com/repository/central") }
-        maven { url = uri("https://maven.aliyun.com/repository/public") }
-        maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
-        maven { url = uri("https://maven.aliyun.com/repository/google") }
-
-        mavenCentral()
-        maven { url 'https://jitpack.io' }
-        gradlePluginPortal()
         google()
+        mavenCentral()
+        gradlePluginPortal()
+        maven { url 'https://jitpack.io' }
+        maven { url = uri("https://maven.aliyun.com/repository/public") }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.4.2'
@@ -25,15 +28,11 @@ buildscript {
 
 allprojects {
     repositories {
-        maven { url = uri("https://maven.aliyun.com/repository/central") }
-        maven { url = uri("https://maven.aliyun.com/repository/public") }
-        maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
-        maven { url = uri("https://maven.aliyun.com/repository/google") }
-
-        mavenCentral()
-        maven { url 'https://jitpack.io' }
-        gradlePluginPortal()
         google()
+        mavenCentral()
+        gradlePluginPortal()
+        maven { url 'https://jitpack.io' }
+        maven { url = uri("https://maven.aliyun.com/repository/public") }
     }
 
     gradle.taskGraph.whenReady {

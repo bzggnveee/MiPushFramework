@@ -99,7 +99,11 @@ android {
                 pwd = properties.getProperty("KEY_PASSWORD")
             }
 
-            if (locale != null) {
+            // Only honor the custom keystore if the file is actually on disk.
+            // Otherwise leave storeFile unset so AGP falls back to the
+            // auto-generated ~/.android/debug.keystore — this is what CI uses
+            // when no signing secrets are configured.
+            if (locale != null && file(locale).exists()) {
                 storeFile file(locale)
                 storePassword keystorePwd
                 keyAlias alias
